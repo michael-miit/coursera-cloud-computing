@@ -37,8 +37,6 @@ echo $SUBNET2B
 echo 'Creating the TARGET GROUP and storing the ARN in $TARGETARN...'
 # https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-target-group.html
 TARGETARN= $(aws elbv2 create-target-group --name ${$8} --vpc-id $VPCID --port 80 -protocol HTTP --query 'TargetGroups[*].TargetGroupArn' --output text)
-aws elbv2 wait target-group-available $TARGETARN
-echo "Target group available..."
 echo $TARGETARN
 
 echo "Creating ELBv2 Elastic Load Balancer..."
