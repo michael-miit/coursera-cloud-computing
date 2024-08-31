@@ -36,14 +36,14 @@ echo $SUBNET2B
 
 echo 'Creating the TARGET GROUP and storing the ARN in $TARGETARN...'
 # https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-target-group.html
-TARGETARN= $(aws elbv2 create-target-group --name $8 --vpc-id $VPCID --port 80 -protocol HTTP --query 'TargetGroups[*].TargetGroupArn' --output text)
+TARGETARN= $(aws elbv2 create-target-group --name ${$8} --vpc-id $VPCID --port 80 -protocol HTTP --query 'TargetGroups[*].TargetGroupArn' --output text)
 aws elbv2 wait target-group-available $TARGETARN
 echo "Target group available..."
 echo $TARGETARN
 
 echo "Creating ELBv2 Elastic Load Balancer..."
 #https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-load-balancer.html
-ELBARN=$(aws elbv2 create-loab-balancer --name $9 --subnets $SUBNET2A $SUBNET2B --security-groups $4 -tags Key=module,Value=$7 --scheme internet-facing --type application --query 'LoadBalancers[*].LoadBalancerArn' --output text)
+ELBARN=$(aws elbv2 create-loab-balancer --name ${$9} --subnets $SUBNET2A $SUBNET2B --security-groups ${$4} -tags Key=module,Value=$7 --scheme internet-facing --type application --query 'LoadBalancers[*].LoadBalancerArn' --output text)
 echo $ELBARN
 
 # AWS elbv2 wait for load-balancer available
