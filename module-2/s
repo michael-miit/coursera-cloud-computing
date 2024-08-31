@@ -1,0 +1,52 @@
+241533132679	r-0ca479253aa2b8634
+INSTANCES	1	x86_64	uefi-preferred	6089dd30-6c45-403c-a43f-b98ee227ea74	legacy-bios	False	True	xen	ami-0e86e20dae9224db8	i-0219a70ad3739b568	t2.micro	coursera-key	2024-08-31T05:52:11+00:00	ip-172-31-93-121.ec2.internal	172.31.93.121		/dev/sda1	ebs	True		subnet-0f2ccc7ab7a0bf37c	hvm	vpc-03e23fcdb778060b7
+CAPACITYRESERVATIONSPECIFICATION	open
+CPUOPTIONS	1	1
+ENCLAVEOPTIONS	False
+MAINTENANCEOPTIONS	default
+METADATAOPTIONS	enabled	disabled	2	required	disabled	pending
+MONITORING	disabled
+NETWORKINTERFACES		interface	12:d6:1f:34:5b:a1	eni-022fc2903d931c4de	241533132679	ip-172-31-93-121.ec2.internal	172.31.93.121	True	in-use	subnet-0f2ccc7ab7a0bf37c	vpc-03e23fcdb778060b7
+ATTACHMENT	2024-08-31T05:52:11+00:00	eni-attach-03aeeaa813a749e0e	True	0	0	attaching
+GROUPS	sg-0edbc53f44a40636f	CourseraSecGroup
+PRIVATEIPADDRESSES	True	ip-172-31-93-121.ec2.internal	172.31.93.121
+PLACEMENT	us-east-1a		default
+PRIVATEDNSNAMEOPTIONS	False	False	ip-name
+SECURITYGROUPS	sg-0edbc53f44a40636f	CourseraSecGroup
+STATE	0	pending
+STATEREASON	pending	pending
+TAGS	module	module2-tag
+INSTANCES	2	x86_64	uefi-preferred	6089dd30-6c45-403c-a43f-b98ee227ea74	legacy-bios	False	True	xen	ami-0e86e20dae9224db8	i-0644af9feccc56990	t2.micro	coursera-key	2024-08-31T05:52:11+00:00	ip-172-31-80-122.ec2.internal	172.31.80.122		/dev/sda1	ebs	True		subnet-0f2ccc7ab7a0bf37c	hvm	vpc-03e23fcdb778060b7
+CAPACITYRESERVATIONSPECIFICATION	open
+CPUOPTIONS	1	1
+ENCLAVEOPTIONS	False
+MAINTENANCEOPTIONS	default
+METADATAOPTIONS	enabled	disabled	2	required	disabled	pending
+MONITORING	disabled
+NETWORKINTERFACES		interface	12:0f:30:31:f1:8f	eni-00489c223cf0c9055	241533132679	ip-172-31-80-122.ec2.internal	172.31.80.122	True	in-use	subnet-0f2ccc7ab7a0bf37c	vpc-03e23fcdb778060b7
+ATTACHMENT	2024-08-31T05:52:11+00:00	eni-attach-0de4d9c82bb5f9e96	True	0	0	attaching
+GROUPS	sg-0edbc53f44a40636f	CourseraSecGroup
+PRIVATEIPADDRESSES	True	ip-172-31-80-122.ec2.internal	172.31.80.122
+PLACEMENT	us-east-1a		default
+PRIVATEDNSNAMEOPTIONS	False	False	ip-name
+SECURITYGROUPS	sg-0edbc53f44a40636f	CourseraSecGroup
+STATE	0	pending
+STATEREASON	pending	pending
+TAGS	module	module2-tag
+INSTANCES	0	x86_64	uefi-preferred	6089dd30-6c45-403c-a43f-b98ee227ea74	legacy-bios	False	True	xen	ami-0e86e20dae9224db8	i-01523c38c092505f0	t2.micro	coursera-key	2024-08-31T05:52:11+00:00	ip-172-31-80-117.ec2.internal	172.31.80.117		/dev/sda1	ebs	True		subnet-0f2ccc7ab7a0bf37c	hvm	vpc-03e23fcdb778060b7
+CAPACITYRESERVATIONSPECIFICATION	open
+CPUOPTIONS	1	1
+ENCLAVEOPTIONS	False
+MAINTENANCEOPTIONS	default
+METADATAOPTIONS	enabled	disabled	2	required	disabled	pending
+MONITORING	disabled
+NETWORKINTERFACES		interface	12:01:d3:c6:4a:83	eni-0d8ea6eccec97b26c	241533132679	ip-172-31-80-117.ec2.internal	172.31.80.117	True	in-use	subnet-0f2ccc7ab7a0bf37c	vpc-03e23fcdb778060b7
+ATTACHMENT	2024-08-31T05:52:11+00:00	eni-attach-065e5380fd7883a54	True	0	0	attaching
+GROUPS	sg-0edbc53f44a40636f	CourseraSecGroup
+PRIVATEIPADDRESSES	True	ip-172-31-80-117.ec2.internal	172.31.80.117
+PLACEMENT	us-east-1a		default
+PRIVATEDNSNAMEOPTIONS	False	False	ip-name
+SECURITYGROUPS	sg-0edbc53f44a40636f	CourseraSecGroup
+STATE	0	pending
+STATEREASON	pending	pending
+TAGS	module	module2-tag

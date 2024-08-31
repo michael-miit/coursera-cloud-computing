@@ -1,0 +1,42 @@
+Begin tests for create-env.sh module 2...
+*******************************************************************************
+Testing for the correct number of EC2 instances launched and in the RUNNING state...
+Correct number of EC2 instances created, expecting 3, received 3.
+InstanceID of: i-080b6ecdbe85d0b1a
+InstanceID of: i-0535aea081406b2b8
+InstanceID of: i-088a313104067ced6
+*******************************************************************************
+
+*******************************************************************************
+Testing to make sure the running EC2 instances all have the tag of module2-tag...
+InstanceID of: i-080b6ecdbe85d0b1a has a tag of: module2-tag
+InstanceID of: i-0535aea081406b2b8 has a tag of: module2-tag
+InstanceID of: i-088a313104067ced6 has a tag of: module2-tag
+Correct. All Ec2 Instances have the correct tag of module2-tag...
+*******************************************************************************
+
+*******************************************************************************
+Testing to make sure the running EC2 instances are all of type t2.micro...
+InstanceID of: i-080b6ecdbe85d0b1a and of InstanceType: t2.micro
+InstanceID of: i-0535aea081406b2b8 and of InstanceType: t2.micro
+InstanceID of: i-088a313104067ced6 and of InstanceType: t2.micro
+Correct Ec2 Instance Type launched for all EC2 instances.
+*******************************************************************************
+
+*******************************************************************************
+Testing for the correct HTTP status (200) response from the webserver on the EC2 instances...
+http://ec2-34-207-88-183.compute-1.amazonaws.com
+Successful request of the index.html file from ec2-34-207-88-183.compute-1.amazonaws.com
+http://ec2-3-88-34-209.compute-1.amazonaws.com
+Successful request of the index.html file from ec2-3-88-34-209.compute-1.amazonaws.com
+http://ec2-54-172-210-157.compute-1.amazonaws.com
+Successful request of the index.html file from ec2-54-172-210-157.compute-1.amazonaws.com
+Correct HTTP status code of 200, received for all 3 EC2 instances.
+*******************************************************************************
+
+*******************************************************************************
+Your result is: 4 out of 4 points. You can retry any items that need adjustment and retest.
+Writing assessment grade to text file.
+Write successful! Ready to submit your Assessment.
+You should now see a create-env-module-02-results.txt file has been generated.
+*******************************************************************************
