@@ -75,7 +75,7 @@ if [ "$INSTANCEIDS" != "" ]
     INSTANCEIDSARRAY=($INSTANCEIDS)
     for INSTANCEID in ${INSTANCEIDSARRAY[@]};
       do
-      aws elbv2 register-targets --target-group-arn $TARGETARN --targets $INSTANCEID
+      aws elbv2 register-targets --target-group-arn $TARGETARN --targets Id=$INSTANCEID,Port=80
       done
   else
     echo "There are no running or pending instances in $INSTANCEIDS to wait for..."
