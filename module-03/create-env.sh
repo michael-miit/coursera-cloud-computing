@@ -37,25 +37,25 @@ echo $SUBNET2B
 echo 'Creating the TARGET GROUP and storing the ARN in $TARGETARN...'
 # https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-target-group.html
 TARGETARN= $(aws elbv2 create-target-group --name $8 --vpc-id $VPCID --port 80 --protocol HTTP --query 'TargetGroups[*].TargetGroupArn' --output text)
-echo $TARGETARN
+echo "${TARGETARN}"
 
 echo "Creating ELBv2 Elastic Load Balancer..."
 #https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-load-balancer.html
 ELBARN=$(aws elbv2 create-load-balancer --name $9 --subnets $SUBNET2A $SUBNET2B --security-groups $4 --tags Key=module,Value=$7 --scheme internet-facing --type application --query 'LoadBalancers[*].LoadBalancerArn' --output text)
-echo $ELBARN
+echo "${ELBARN}"
 
 # AWS elbv2 wait for load-balancer available
 # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/elbv2/wait/load-balancer-available.html
 echo "Waiting for load balancer to be available..."
-aws elbv2 wait load-balancer-available $ELBARN
+aws elbv2 wait load-balancer-available --load-balancer-arns $ELBARN
 echo "Load balancer available..."
 # create AWS elbv2 listener for HTTP on port 80
 #https://awscli.amazonaws.com/v2/documentation/api/latest/reference/elbv2/create-listener.html
-aws elbv2 create-listener --load-balancer-arn $ELBARN --protocol HTTP --port 80 --tags Key=module,Value=$7
+aws elbv2 create-listener --load-balancer-arn $ELBARN --protocol HTTP --port 80 --tags Key=module,Value=$7 --default-actions Type=forward,TargetGroupArn=$TARGETARN
 
 echo "Beginning to create and launch instances..."
 # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ec2/run-instances.html
-aws ec2 run-instances --image-id $1 --instance-type $2 --key-name $3 --security-group-ids $4 --count $5 --user-data $6 --tag-specifications "ResourceType=instance,Tags=[{Key=module,Value=${7}]"
+aws ec2 run-instances --image-id $1 --instance-type $2 --key-name $3 --security-group-ids $4 --count $5 --user-data $6 --tag-specifications "ResourceType=instance,Tags=[{Key=module,Value=${7}}]"
 
 # Collect Instance IDs
 # https://stackoverflow.com/questions/31744316/aws-cli-filter-or-logic
