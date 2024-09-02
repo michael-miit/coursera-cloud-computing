@@ -60,7 +60,7 @@ echo "Creating the AutoScalingGroup Launch Template..."
 # Retreive the Launch Template ID using a --query
 LAUNCHTEMPLATEID=$(aws ec2 create-launch-template \
                     --launch-template-name $12 \
-                    --launch-template-data file:$ltconfigfile \
+                    --launch-template-data '{ "NetworkInterfaces": [ { "DeviceIndex": 0, "AssociatePublicIpAddress": true, "Groups": [ "sg-0edbc53f44a40636f" ], "SubnetId": "subnet-0f2ccc7ab7a0bf37c", "DeleteOnTermination": true } ], "ImageId": "ami-0e86e20dae9224db8", "InstanceType": "t2.micro", "KeyName": "coursera-key", "UserData": "IyEvYmluL2Jhc2gKCiMgU2FtcGxlIGNvZGUgdG8gaW5zdGFsbCBOZ2lueCB3ZWJzZXJ2ZXIKCnN1ZG8gYXB0IHVwZGF0ZQpzdWRvIGFwdCBpbnN0YWxsIC15IG5naW54CgpzdWRvIHN5c3RlbWN0bCBlbmFibGUgLS1ub3cgbmdpbng=", "Placement": { "AvailabilityZone": "us-east-1a" },"TagSpecifications":[{"ResourceType":"instance","Tags":[{"Key":"module","Value": "module4-tag" }]}] }' \
                     --query 'LaunchTemplate[*].LaunchTemplateId' \
                     --output text)
 
