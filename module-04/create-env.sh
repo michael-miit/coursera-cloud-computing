@@ -71,6 +71,30 @@ echo 'Creating the TARGET GROUP and storing the ARN in $TARGETARN'
 TARGETARN=$(aws elbv2 create-target-group --name $8 --vpc-id $VPCID --port 80 --protocol HTTP --query 'TargetGroups[*].TargetGroupArn' --output text)
 echo $TARGETARN
 
+echo "Beginning to create and launch instances..."
+# https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ec2/run-instances.html
+aws ec2 run-instances --image-id $1 --instance-type $2 --key-name $3 --security-group-ids $4 --count $5 --user-data $6 --tag-specifications "ResourceType=instance,Tags=[{Key=module,Value=${7}}]"
+
+# Collect Instance IDs
+# https://stackoverflow.com/questions/31744316/aws-cli-filter-or-logic
+INSTANCEIDS=$(aws ec2 describe-instances --output=text --query 'Reservations[*].Instances[*].InstanceId' --filter "Name=instance-state-name,Values=running,pending")
+
+if [ "$INSTANCEIDS" != "" ]
+  then
+    aws ec2 wait instance-running --instance-ids $INSTANCEIDS
+    echo "Waiting for Instances to be in the RUNNING state..."
+    echo "$INSTANCEIDS to be registered with the target group..."
+    # https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/register-targets.html
+    # Assignes the value of $EC2IDS and places each element (seperated by a space) into an array element
+    INSTANCEIDSARRAY=($INSTANCEIDS)
+    for INSTANCEID in ${INSTANCEIDSARRAY[@]};
+      do
+      aws elbv2 register-targets --target-group-arn $TARGETARN --targets Id=$INSTANCEID,Port=80
+      done
+  else
+    echo "There are no running or pending instances in $INSTANCEIDS to wait for..."
+fi 
+
 echo "Creating ELBv2 Elastic Load Balancer..."
 #https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-load-balancer.html
 ELBARN=$(aws elbv2 create-load-balancer --name $9 --subnets $SUBNET2A $SUBNET2B --security-groups $4 --tags Key=module,Value=$7 --scheme internet-facing --type application --query 'LoadBalancers[*].LoadBalancerArn' --output text)
@@ -108,19 +132,6 @@ echo 'Waiting for Auto Scaling Group to spin up EC2 instances and attach them to
 aws elbv2 wait target-in-service \
     --target-group-arn $TARGETARN
 echo "Targets attached to Auto Scaling Group..."
-
-# Collect Instance IDs
-# https://stackoverflow.com/questions/31744316/aws-cli-filter-or-logic
-INSTANCEIDS=$(aws ec2 describe-instances --output=text --query 'Reservations[*].Instances[*].InstanceId' --filter "Name=instance-state-name,Values=running,pending")
-
-if [ "$INSTANCEIDS" != "" ]
-  then
-    aws ec2 wait instance-running --instance-ids $INSTANCEIDS
-    echo "Finished launching instances..."
-  else
-    echo 'There are no running or pending values in $INSTANCEIDS to wait for...'
-fi 
-
 
 # Retreive ELBv2 URL via aws elbv2 describe-load-balancers --query and print it to the screen
 #https://awscli.amazonaws.com/v2/documentation/api/latest/reference/elbv2/describe-load-balancers.html
