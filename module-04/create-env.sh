@@ -57,11 +57,13 @@ echo $SUBNET2B
 # Create AWS EC2 Launch Template
 # https://awscli.amazonaws.com/v2/documentation/api/2.0.33/reference/ec2/create-launch-template.html
 echo "Creating the AutoScalingGroup Launch Template..."
-aws ec2 create-launch-template 
-echo "Launch Template created..."
-
 # Retreive the Launch Template ID using a --query
-LAUNCHTEMPLATEID=
+LAUNCHTEMPLATEID=$(aws ec2 create-launch-template --launch-template-name $12 \
+                    --launch-template-data file:$ltconfigfile \
+                    --query 'LaunchTemplate[*].LaunchTemplateId'
+                    --output text)
+
+echo "Launch Template created..."
 
 echo 'Creating the TARGET GROUP and storing the ARN in $TARGETARN'
 # https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/create-target-group.html
@@ -90,12 +92,20 @@ echo 'Creating Auto Scaling Group...'
 # Create Autoscaling group ASG - needs to come after Target Group is created
 # Create autoscaling group
 # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/autoscaling/create-auto-scaling-group.html
-aws autoscaling create-auto-scaling-group 
+aws autoscaling create-auto-scaling-group \
+    --auto-scaling-group-name $13 \
+    --launch-template LaunchTemplateId=$LAUNCHTEMPLATEID \
+    --min-size $14 \
+    --max-size $15 \
+    --desired-capacity $16 \
+    --target-group-arns $TARGETARN \
+    --vpc-zone-identifier "${SUBNET2A},${SUBNET2B}"
 
 echo 'Waiting for Auto Scaling Group to spin up EC2 instances and attach them to the TargetARN...'
 # Create waiter for registering targets
 # https://docs.aws.amazon.com/cli/latest/reference/elbv2/wait/target-in-service.html
-aws elbv2 wait target-in-service
+aws elbv2 wait target-in-service \
+    --target-group-arn $TARGETARN
 echo "Targets attached to Auto Scaling Group..."
 
 # Collect Instance IDs
@@ -113,7 +123,7 @@ fi
 
 # Retreive ELBv2 URL via aws elbv2 describe-load-balancers --query and print it to the screen
 #https://awscli.amazonaws.com/v2/documentation/api/latest/reference/elbv2/describe-load-balancers.html
-URL=
+URL=$(aws elbv2 describe-load-balancers --load-balancer-arns $ELBARN --query 'LoadBalancers[*].DNSName' --output text)
 echo $URL
 
 # end of outer fi - based on arguments.txt content
