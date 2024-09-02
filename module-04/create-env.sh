@@ -58,9 +58,10 @@ echo $SUBNET2B
 # https://awscli.amazonaws.com/v2/documentation/api/2.0.33/reference/ec2/create-launch-template.html
 echo "Creating the AutoScalingGroup Launch Template..."
 # Retreive the Launch Template ID using a --query
-LAUNCHTEMPLATEID=$(aws ec2 create-launch-template --launch-template-name $12 \
+LAUNCHTEMPLATEID=$(aws ec2 create-launch-template \
+                    --launch-template-name $12 \
                     --launch-template-data file:$ltconfigfile \
-                    --query 'LaunchTemplate[*].LaunchTemplateId'
+                    --query 'LaunchTemplate[*].LaunchTemplateId' \
                     --output text)
 
 echo "Launch Template created..."
