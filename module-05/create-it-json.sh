@@ -50,7 +50,7 @@ JSON="{
             \"DeleteOnTermination\": true
         }
     ],
-    \"BlockDeviceMappings\":[{\"DeviceName\":\"/dev/sdc\",\"Ebs\":{\"VolumeSize\": ${18}}},{\"DeviceName\":\"/dev/sdc2\",\"Ebs\":{\"VolumeSize\": ${18}}},,{\"DeviceName\":\"/dev/sdc3\",\"Ebs\":{\"VolumeSize\": ${18}}}],
+    \"BlockDeviceMappings\":[{\"DeviceName\":\"/dev/sdc\",\"Ebs\":{\"VolumeSize\": ${18}}},{\"DeviceName\":\"/dev/sdc2\",\"Ebs\":{\"VolumeSize\": ${18}}},{\"DeviceName\":\"/dev/sdc3\",\"Ebs\":{\"VolumeSize\": ${18}}}],
     \"ImageId\": \"${1}\",
     \"InstanceType\": \"${2}\",
     \"KeyName\": \"${3}\",
