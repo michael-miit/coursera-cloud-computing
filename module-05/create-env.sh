@@ -95,7 +95,7 @@ aws autoscaling create-auto-scaling-group \
     --min-size $14 \
     --max-size $15 \
     --desired-capacity $16 \
-    --vpc-zone-identifier "${$SUBNET2A},${$SUBNET2A}" \
+    --vpc-zone-identifier "$SUBNET2A,$SUBNET2A" \
     --target-group-arns $TARGETARN 
 
 echo 'Waiting for Auto Scaling Group to spin up EC2 instances and attach them to the TargetARN...'
