@@ -8,8 +8,8 @@ import os
 
 # Assignment grand total
 grandtotal = 0
-totalPoints = 6
-assessmentName = "module-4-destroy-assessment"
+totalPoints = 7
+assessmentName = "module-5-destroy-assessment"
 
 # Documentation Links
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html
@@ -19,11 +19,14 @@ assessmentName = "module-4-destroy-assessment"
 clientec2 = boto3.client('ec2')
 clientelbv2 = boto3.client('elbv2')
 clientasg = boto3.client('autoscaling')
+clients3 = boto3.client('s3')
 
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/describe_instances.html
-response = clientec2.describe_instances(
+response = clientec2.describe_instances() # End of function
 
-) # End of function
+# https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/list_buckets.html
+# Get a Dict of all bucket names
+responseS3 = clients3.list_buckets()
 
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/elbv2/client/describe_load_balancers.html
 responseELB = clientelbv2.describe_load_balancers()
@@ -40,7 +43,7 @@ responseasgi = clientasg.describe_auto_scaling_instances()
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/describe_launch_templates.html
 responselt = clientec2.describe_launch_templates()
 
-print("Begin tests for destroy-env.sh module 4...")
+print("Begin tests for destroy-env.sh module 5...")
 destroyTestResults = []
 ##############################################################################
 # Check to see if no Target Groups are present
@@ -142,6 +145,19 @@ else:
 print('*' * 79)
 print("\r")
 ##############################################################################
+# Check to see if 2 S3 buckets
+##############################################################################
+print('*' * 79)
+print("Testing to make sure are only no S3 buckets...")
+if len(responseS3['Buckets']) == 0:
+    print("Correct Number of S3 buckets: 0, found...")
+    grandtotal+=1
+else:
+  print("Expecting 0 S3 buckets. The number of buckets found: " + str(len(responseS3['Buckets'])) + ". Perhaps a destroy-env.sh failed partially or an example S3 bucket was left over? Try running the, bash ./destroy-env.sh again..." )
+  
+print('*' * 79)
+print("\r")
+##############################################################################
 # Print out the grandtotal and the grade values to result.txt
 ##############################################################################
 print('*' * 79)
@@ -154,7 +170,7 @@ else:
 
 # Write results to a text file for import to the grade system
 # https://www.geeksforgeeks.org/sha-in-python/
-f = open('destroy-env-module-04-results.txt', 'w', encoding="utf-8")
+f = open('destroy-env-module-05-results.txt', 'w', encoding="utf-8")
 
 # Gather sha256 of module-name and grandtotal
 # https://stackoverflow.com/questions/70498432/how-to-hash-a-string-in-python
@@ -166,7 +182,7 @@ h.update(resultToHash.encode())
 
 resultsdict = {
   'Name': assessmentName,
-  'fractionalScore' : grandtotal/totalPoints,
+  'gtotal' : grandtotal/totalPoints,
   'datetime': dt,
   'sha': h.hexdigest() 
 }
@@ -175,6 +191,6 @@ resultsdict = {
 print("Writing assessment grade to text file.")
 json.dump(resultsdict,f)
 print("Write successful! Ready to submit your Assessment.")
-print("You should now see a destroy-env-module-04-results.txt file has been generated.")
+print("You should now see a destroy-env-module-05-results.txt file has been generated.")
 f.close
 print('*' * 79)
