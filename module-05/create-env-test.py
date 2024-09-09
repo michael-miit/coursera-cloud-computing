@@ -12,22 +12,27 @@ ltfilename="./config.json"
 
 # Assignment grand total
 grandtotal = 0
-totalPoints = 8
-assessmentName = "module-4-create-assessment"
-correctNumberOfEC2Instances = 3
-correctNumberOfTargetGroups = 1
+totalPoints = 11
+assessmentName = "module-5-create-assessment"
+correctNumberOfEC2Instances      = 3
+correctNumberOfTargetGroups      = 1
 correctNumberOfAutoScalingGroups = 1
-correctNumberOfELBs         = 1
-tag = "module4-tag"
+correctNumberOfELBs              = 1
+correctNumberOfEBS               = 3
+correctNumberOfS3Buckets         = 2
+correctNumberOfTotalObjects      = 4
+tag = "module5-tag"
 
 # Documentation Links
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/elbv2.html
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/autoscaling.html
+# https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html
 
 clientec2 = boto3.client('ec2')
 clientelbv2 = boto3.client('elbv2')
 clientasg = boto3.client('autoscaling')
+clients3 = boto3.client('s3')
 
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/describe_instances.html
 responseEC2 = clientec2.describe_instances(
@@ -38,6 +43,10 @@ responseEC2 = clientec2.describe_instances(
      }
 ],
 ) # End of function
+
+# https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/list_buckets.html
+# Get a Dict of all bucket names
+responseS3 = clients3.list_buckets()
 
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/elbv2/client/describe_load_balancers.html
 responseELB = clientelbv2.describe_load_balancers()
@@ -51,11 +60,14 @@ responseasg = clientasg.describe_auto_scaling_groups()
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/autoscaling/client/describe_auto_scaling_instances.html
 responseasgi = clientasg.describe_auto_scaling_instances()
 
+# https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/autoscaling/client/describe_auto_scaling_groups.html
+responseasg = clientasg.describe_auto_scaling_groups()
+
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/describe_launch_templates.html
 responselt = clientec2.describe_launch_templates()
 
 ##############################################################################
-print("Begin tests for create-env.sh module 4...")
+print("Begin tests for create-env.sh module 5...")
 ##############################################################################
 
 ##############################################################################
@@ -66,6 +78,7 @@ print("Testing for the existence of the launch template data file...")
 if os.path.isfile(ltfilename):
   print("Launch Template datafile " + ltfilename + " exists!")
   grandtotal += 1
+  print("One point...")
 else:
   print("Launch Template datafile " + ltfilename + " does not exist!")
   print("Check to make sure the the bash ./create-lt-json.sh $(< ~/arguments.txt) command has been run.")
@@ -73,31 +86,7 @@ else:
 print('*' * 79)
 print("\r")
 ##############################################################################
-# Check to make sure there are 3 instances of 'running' state
-##############################################################################
-print('*' * 79)
-print("Testing for the correct number of EC2 instances launched and in the RUNNING state...")
-try:
-  if len(responseEC2['Reservations'][0]['Instances']) == 0:
-    print("Beginning tests...")
-except IndexError:  
-  sys.exit("No EC2 instances in the RUNNING STATE - check that you ran your create-env.sh or wait 30-60 seconds more to make sure your instances are in the running state.")
-
-if len(responseEC2['Reservations'][0]['Instances']) == correctNumberOfEC2Instances:
-    print("Correct number of EC2 instances created, expecting " + str(correctNumberOfEC2Instances) + ", received " + str(len(responseEC2['Reservations'][0]['Instances'])) + " instances...")
-    for n in range(0,len(responseEC2['Reservations'][0]['Instances'])):
-      print("InstanceID of: " + responseEC2['Reservations'][0]['Instances'][n]['InstanceId'])
-    
-    grandtotal += 1
-else:
-    print("Incorrect Number of EC2 instances created, expecting " + str(correctNumberOfEC2Instances) + ", received " + str(len(responseEC2['Reservations'][0]['Instances'])) + " instances...")
-    for n in range(0,len(responseEC2['Reservations'][0]['Instances'])):
-      print("InstanceID of: " + responseEC2['Reservations'][0]['Instances'][n]['InstanceId'])
-
-print('*' * 79)
-print("\r")
-##############################################################################
-# Check Tag values to be 'module4-tag'
+# Check Tag values to be 'module5-tag'
 ##############################################################################
 print('*' * 79)
 print("Testing to make sure the running EC2 instances all have the tag of: " + tag + "...")
@@ -117,6 +106,7 @@ else:
 if checkTagTypeMismatch == False:
   print("Correct. All Ec2 Instances have the correct tag of: " + tag + "...")
   grandtotal += 1
+  print("One point...")
 else:
   print("AutoScalingGroup: " + str(responseasg['AutoScalingGroups'][0]['AutoScalingGroupName'] + "...") + "contains the tag: " + tag)
   print("Go back to your arguments.txt file and take a look at the value for $7.")
@@ -137,8 +127,9 @@ for n in range(0,len(responseEC2['Reservations'][0]['Instances'])):
      print("Incorrect Ec2 Instance Type of " + str(responseEC2['Reservations'][0]['Instances'][n]['InstanceType']) + " set.")
 
 if checkInstanceTypeMismatch == False:
-   print("Correct Ec2 Instance Type launched for all 3 EC2 instances.")
+   print("Correct Ec2 Instance Type launched for all EC2 instances.")
    grandtotal += 1
+   print("One point...")
 else:
    print("Incorrect Ec2 Instance Types launched. Perhaps go back and take a look at the value in the arguments.txt $1 and $2.")
 
@@ -172,6 +163,7 @@ except requests.exceptions.ConnectionError as errc:
 if checkHttpReturnStatusMismatch == False:
    print("Correct HTTP status code of 200, received for the Elastic Load Balancer URL...")
    grandtotal += 1
+   print("One point...")
 else:
    print("Incorrect status code received. Perhaps go back and take a look at the --user-file value and the content of the install-env.sh script. Or check your security group to make sure the correct ports are open.")
 
@@ -191,6 +183,7 @@ else:
   print("Expecting 1 target group and received 1 target group: ")
   print(str(responseTG['TargetGroups'][0]['TargetGroupArn']))
   grandtotal += 1
+  print("One point...")
 
 print('*' * 79)
 print("\r")
@@ -208,6 +201,7 @@ else:
   print("Expecting 1 target group and received 1 load balancer arn attached to Target Group: ")
   print(str(responseTG['TargetGroups'][0]['LoadBalancerArns']))
   grandtotal += 1
+  print("One point...")
 
 print('*' * 79)
 print("\r")
@@ -216,8 +210,8 @@ print("\r")
 # healthy instances attached
 ##############################################################################
 print('*' * 79)
-print("\r")
 healthy = 0
+print("Testing to make sure there is 1 Autoscaling Group created and desired state is 3 instances...")
 # Loop through response asgi  check N for instance healthy
 if len(responseasgi['AutoScalingInstances']) == 3:
   for n in range(0,len(responseasgi['AutoScalingInstances'])):
@@ -233,6 +227,7 @@ else:
 
 if healthy == 3:
   grandtotal += 1
+  print("One point...")
 
 print('*' * 79)
 print("\r")
@@ -240,14 +235,95 @@ print("\r")
 # Check to make sure the is one Launch Template created
 ##############################################################################
 print('*' * 79)
-print("\r")
-
+print("Testing to make sure one launch template only has been created...")
 if len(responselt['LaunchTemplates']) == 1:
   print("Expecting 1 LaunchTemplate and received 1 LaunchTemplate named: " + str(responselt['LaunchTemplates'][0]['LaunchTemplateName']))
   grandtotal +=1
+  print("One point...")
 else:
   print("Expecting 1 LaunchTemplate and 1 Autoscaling Group and received " + str(len(responselt['LaunchTemplates'])) + " launch templates...")
   print("Perhaps check to make any/all previously created Autoscaling groups were properly deleted by the command: bash ./destroy-env.sh command...")
+
+print('*' * 79)
+print("\r")
+##############################################################################
+# Check to see if 2 S3 buckets
+##############################################################################
+print('*' * 79)
+print("Testing to make sure are only two S3 buckets...")
+if len(responseS3['Buckets']) == 2:
+  for n in range(0,len(responseS3['Buckets'])):
+    print("S3 bucket found: " + str(responseS3['Buckets'][n]['Name']))
+
+  print("Correct Number of S3 buckets (2) found...")
+  grandtotal+=1
+  print("One point...")
+else:
+  print("Expecting 2 S3 buckets. The number of buckets found is incorrect..." + str(len(responseS3['Buckets'])) + " were found... Perhaps a create-env.sh failed partially or an example S3 bucket was left over? Try running the, bash ./destroy-env.sh to clean everything up and then run the bash ./create-env.sh $(< ~/arguments.txt) again..." )
+  
+print('*' * 79)
+print("\r")
+##############################################################################
+# Check to see if 4 objects exist in the 2 S3 buckets
+##############################################################################
+print('*' * 79)
+print("Testing to make sure are only 4 Objects located in the 2 created buckets...")
+# https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/list_objects_v2.html
+objectCount = 0
+if len(responseS3['Buckets']) == 2:
+  for n in range(0,len(responseS3['Buckets'])):
+    print("S3 bucket found: " + str(responseS3['Buckets'][n]['Name']))
+    responseS3list = clients3.list_objects_v2(Bucket=responseS3['Buckets'][n]['Name'])
+    if 'Contents' in responseS3list and len(responseS3list['Contents']) == 2:
+      print("Correct number of objects, 2, found in S3 bucket ..." + str(responseS3['Buckets'][n]['Name']))
+      for k in range(0,len(responseS3list['Contents'])):
+        print("Object:" + str(responseS3list['Contents'][k]['Key']))
+      objectCount+=2 
+
+    else:
+      print("Expecting two object to be found in bucket: " + str(responseS3['Buckets'][n]['Name']) + " , but none were found...")
+      print("Something went wrong in uploading your images to " + str(responseS3['Buckets'][n]['Name']) + " bucket. Execute your bash ./destroy-env.sh script and rerun your bash ./create-env.sh $(< ~/arguments.txt) script and lets see if we can fix the issue...") 
+    
+ # responseS3list = clients3.list_objects_v2(Bucket='jrh-raw')
+ # responseS3list['Contents'][0]['Key']
+  if objectCount == 4:
+    grandtotal+=1
+    print("One point...")
+else:
+  print("Expecting 4 Objects in two S3 buckets...")
+
+# responseS3['Buckets'][0]['Name']
+# Calculate length of response -- should be 2
+
+print('*' * 79)
+print("\r")
+##############################################################################
+# Check to see two Elastic Block Stores exist attached to each EC2 instance
+##############################################################################
+print('*' * 79)
+print("Testing to make sure two Block Stores are attached to each Ec2 instance...")
+count = 0
+
+try:
+  if len(responseEC2['Reservations'][0]['Instances']) == 0:
+    print("Beginning tests...")
+except IndexError:  
+  sys.exit("No EC2 instances in the RUNNING STATE - check that you ran your create-env.sh or wait 30-60 seconds more to make sure your instances are in the running state.")
+
+for n in range(0,len(responseEC2['Reservations'][0]['Instances'])):
+  print("Checking number of EBS attached to InstanceID of: " + responseEC2['Reservations'][0]['Instances'][n]['InstanceId'])
+  if len(responseEC2['Reservations'][0]['Instances'][n]['BlockDeviceMappings']) == correctNumberOfEBS:
+    print("Correct number of EBS instances attached to InstanceID: " + str(responseEC2['Reservations'][0]['Instances'][n]['InstanceId']))
+    for j in range(0,len(responseEC2['Reservations'][0]['Instances'][n]['BlockDeviceMappings'])):
+      print("EBS Device name: " + str(responseEC2['Reservations'][0]['Instances'][n]['BlockDeviceMappings'][j]['DeviceName']))
+      print("Volume-ID of: " + str(responseEC2['Reservations'][0]['Instances'][n]['BlockDeviceMappings'][j]['Ebs']['VolumeId']))
+      count+=1
+      print("One point...")
+  else:
+    print("Incorrect Number of Elastic Block Stores created per instance, expecting " + str(correctNumberOfEBS) + ", received " + str(len(responseEC2['Reservations'][0]['Instances'][n]['BlockDeviceMappings'])) + " instances...")
+
+if count == 9:
+  grandtotal+=1
 
 print('*' * 79)
 print("\r")
@@ -259,7 +335,7 @@ print("Your result is: " + str(grandtotal) + " out of " + str(totalPoints) + " p
 
 # Write results to a text file for import to the grade system
 # https://www.geeksforgeeks.org/sha-in-python/
-f = open('create-env-module-04-results.txt', 'w', encoding="utf-8")
+f = open('create-env-module-05-results.txt', 'w', encoding="utf-8")
 
 # Gather sha256 of module-name and grandtotal
 # https://stackoverflow.com/questions/70498432/how-to-hash-a-string-in-python
@@ -269,10 +345,9 @@ resultToHash=(assessmentName + str(grandtotal) + dt)
 h = hashlib.new('sha256')
 h.update(resultToHash.encode())
 
-# Changed gtotal to fractionalScore due to ghost in the Coursera system that wouldn't see the change
 resultsdict = {
   'Name': assessmentName,
-  'fractionalScore' : grandtotal/totalPoints,
+  'gtotal' : grandtotal/totalPoints,
   'datetime': dt,
   'sha': h.hexdigest() 
 }
@@ -281,6 +356,6 @@ resultsdict = {
 print("Writing assessment grade to text file.")
 json.dump(resultsdict,f)
 print("Write successful! Ready to submit your Assessment.")
-print("You should now see a create-env-module-04-results.txt file has been generated.")
+print("You should now see a create-env-module-05-results.txt file has been generated.")
 f.close
 print('*' * 79)
