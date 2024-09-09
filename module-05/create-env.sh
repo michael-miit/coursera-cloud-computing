@@ -91,11 +91,13 @@ echo 'Creating Auto Scaling Group...'
 # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/autoscaling/create-auto-scaling-group.html
 aws autoscaling create-auto-scaling-group \
     --auto-scaling-group-name $13 \
-    --launch-template LaunchTemplateId=$LAUNCHTEMPLATEID \
+    --launch-template LaunchTemplateName="${12}"\
     --min-size $14 \
     --max-size $15 \
     --desired-capacity $16 \
     --vpc-zone-identifier "$SUBNET2A,$SUBNET2A" \
+    --health-check-type EC2 \
+    --health-check-grace-period 300 \
     --target-group-arns $TARGETARN 
 
 echo 'Waiting for Auto Scaling Group to spin up EC2 instances and attach them to the TargetARN...'
@@ -104,9 +106,9 @@ echo 'Waiting for Auto Scaling Group to spin up EC2 instances and attach them to
 aws elbv2 wait target-in-service --target-group-arn $TARGETARN 
 echo "Targets attached to Auto Scaling Group..."
 
-echo "Beginning to create and launch instances..."
+#echo "Beginning to create and launch instances..."
 # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ec2/run-instances.html
-aws ec2 run-instances --image-id $1 --instance-type $2 --key-name $3 --security-group-ids $4 --count $5 --user-data $6 --tag-specifications "ResourceType=instance,Tags=[{Key=module,Value=${7}}]"
+#aws ec2 run-instances --image-id $1 --instance-type $2 --key-name $3 --security-group-ids $4 --count $5 --user-data $6 --tag-specifications "ResourceType=instance,Tags=[{Key=module,Value=${7}}]"
 
 
 # Collect Instance IDs
@@ -118,13 +120,6 @@ if [ "$INSTANCEIDS" != "" ]
     aws ec2 wait instance-running --instance-ids 
     echo "Finished launching instances..."
     echo "$INSTANCEIDS to be registered with the target group..."
-    # https://awscli.amazonaws.com/v2/documentation/api/2.0.34/reference/elbv2/register-targets.html
-    # Assignes the value of $EC2IDS and places each element (seperated by a space) into an array element
-    INSTANCEIDSARRAY=($INSTANCEIDS)
-    for INSTANCEID in ${INSTANCEIDSARRAY[@]};
-      do
-      aws elbv2 register-targets --target-group-arn $TARGETARN --targets Id=$INSTANCEID,Port=80
-      done
   else
     echo 'There are no running or pending values in $INSTANCEIDS to wait for...'
 fi 

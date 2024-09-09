@@ -50,14 +50,14 @@ JSON="{
             \"DeleteOnTermination\": true
         }
     ],
-    \"BlockDeviceMappings\":[{\"DeviceName\":\"/dev/sdc\",\"Ebs\":{\"VolumeSize\": ${18}}}],
+    \"BlockDeviceMappings\":[{\"DeviceName\":\"/dev/sdc\",\"Ebs\":{\"VolumeSize\": ${18}}},{\"DeviceName\":\"/dev/sdc2\",\"Ebs\":{\"VolumeSize\": ${18}}},,{\"DeviceName\":\"/dev/sdc3\",\"Ebs\":{\"VolumeSize\": ${18}}}],
     \"ImageId\": \"${1}\",
     \"InstanceType\": \"${2}\",
     \"KeyName\": \"${3}\",
     \"UserData\": \"$BASECONVERT\",
     \"Placement\": {
         \"AvailabilityZone\": \"${10}\"
-    },\"TagSpecifications\":[{\"ResourceType\":\"instance\",\"Tags\":[{\"Key\":\"module\",\"Value\": \"${7}\" }]}]
+    },\"TagSpecifications\":[{\"ResourceType\":\"instance\",\"Tags\":[{\"Key\":\"module\",\"Value\": \"${7}\" }]},]
 }"
 
 # Redirecting the content of our JSON to a file
