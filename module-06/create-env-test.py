@@ -53,12 +53,12 @@ engineCorrect = False
 if len(response['DBInstances']) == correctNumberOfRDSInstances:
   for n in range(0,len(response['DBInstances'])):
     print("DBInstance Identifier: " + response['DBInstances'][n]['DBInstanceIdentifier'])
-    if response['DBInstances'][n]['Engine'] == "mysql":
+    if response['DBInstances'][n]['Engine'] == "mariadb":
       engineCorrect = True
       print("Your RDS Instance is running: " + str(response['DBInstances'][n]['Engine']))
     else:
       engineCorrect = False
-      print("Something happened and the RDs database engine is not mysql. Check your create-env.sh for the --engine option...")
+      print("Something happened and the RDs database engine is not mariadb. Check your create-env.sh for the --engine option...")
 else:
   print("Something happened and you only have, " + str(len(response['DBInstances'])) + " RDS instances. Perhaps double check the AWS console and check the status of your RDS instances?")
 
