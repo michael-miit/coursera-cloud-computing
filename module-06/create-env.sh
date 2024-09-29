@@ -46,7 +46,7 @@ elif [ -z "$SECRET_ID" ]; then
     echo "Check to see if you ran the command: bash ./create-secrets.sh \$(< ~/arguments.txt)"
 else
     USERVALUE=$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --output=json | jq -r '.SecretString | fromjson | .user')
-    PASSVALUE=$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --output=json | jq -r '.SecretString | fromjson | .pass')
+    PASSVALUE=$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --output=json | jq -r '.SecretString | fromjson | .password')
     
     echo $USERVALUE
     echo $PASSVALUE
