@@ -40,7 +40,6 @@ elif [ "$SECRET_ID" == "" ]
      echo "You haven't created the secret your named in \$\{21\}..." 
      echo "Check to see if you ran the command: bash ./create-secrets.sh \$(< ~/arguments.txt)"
 else
-
     USERVALUE=$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --output=json | jq '.SecretString' | sed 's/[\\n]//g' | sed 's/^"//g' | sed 's/"$//g' | jq '.user' | sed 's/"//g')
     PASSVALUE=$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --output=json | jq '.SecretString' | sed 's/[\\n]//g' | sed 's/^"//g' | sed 's/"$//g' | jq '.pass' | sed 's/"//g')
 
@@ -49,14 +48,14 @@ else
     echo "******************************************************************************"
     echo "Creating RDS instance..."
     echo "******************************************************************************"
-    aws rds create-db-instance --db-instance-identifier  --db-instance-class db.t3.micro --engine --master-username $USERVALUE --master-user-password $PASSVALUE --allocated-storage 20 --db-name employee_database --tags="Key=assessment,Value=${7}"
+    aws rds create-db-instance --db-instance-identifier ${22} --db-instance-class db.t3.micro --engine mariadb --master-username $USERVALUE --master-user-password $PASSVALUE --allocated-storage 20 --db-name employee_database --tags="Key=assessment,Value=${7}"
     # Add wait command for db-instance available
     # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/rds/wait/db-instance-available.html
     echo "******************************************************************************"
     echo "Waiting for RDS instance: to be created..."
     echo "This might take around 5-15 minutes..."
     echo "******************************************************************************"
-    aws rds wait db-instance-available --db-instance-identifier
+    aws rds wait db-instance-available --db-instance-identifier ${22}
     echo "******************************************************************************"
     echo "RDS instance created and in the available state..."
     echo "******************************************************************************"
@@ -65,7 +64,7 @@ else
     echo "Creating RDS read-replica instance..."
     echo "******************************************************************************"
     # Append "-read-replica" to the ${22} to create the read-replica name
-    aws rds create-db-instance-read-replica --db-instance-identifier  --source-db-instance-identifier --tags="Key=assessment,Value=${7}"
+    aws rds create-db-instance-read-replica --db-instance-identifier "${23}-read-replica" --source-db-instance-identifier ${22} --tags="Key=assessment,Value=${7}"
 
     # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/rds/wait/db-instance-available.html
     echo "******************************************************************************"
@@ -73,16 +72,16 @@ else
     echo "This might take another 5-15 minutes..."
     echo "Perhaps check out https://xkcd.com/303/ ..."
     echo "******************************************************************************"
-    aws rds wait db-instance-available --db-instance-identifier 
+    aws rds wait db-instance-available --db-instance-identifier "${23}-read-replica"
 
     # Fetching RDS address
     # https://awscli.amazonaws.com/v2/documentation/api/latest/reference/rds/describe-db-instances.html
     echo "******************************************************************************"
     echo "Retrieving the RDS Endpoint Address and printing to the screen..."
-    RDS_Address=$(aws rds describe-db-instances --db-instance-identifier --query "")
+    RDS_Address=$(aws rds describe-db-instances --db-instance-identifier "${23}-read-replica" --query "DBInstance[0].Endpoint.Address" --output text) 
     echo $RDS_Address
     echo "Retrieving the RDS Read Replica Endpoint Address and printing to the screen..."
-    RDS_RR_Address=$(aws rds describe-db-instances --db-instance-identifier  --query "")
+    RDS_RR_Address=$(aws rds describe-db-instances --db-instance-identifier $RDS_Address --query "DBInstances[0].Endpoint.Address" --output text)
     echo $RDS_RR_Address
 # End of main if
 fi
