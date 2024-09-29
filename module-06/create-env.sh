@@ -48,6 +48,9 @@ else
     USERVALUE=$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --output=json | jq -r '.SecretString | fromjson | .user')
     PASSVALUE=$(aws secretsmanager get-secret-value --secret-id $SECRET_ID --output=json | jq -r '.SecretString | fromjson | .pass')
     
+    echo $USERVALUE
+    echo $PASSVALUE
+
     # Create RDS instance
     echo "******************************************************************************"
     echo "Creating RDS instance..."
