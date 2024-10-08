@@ -164,7 +164,7 @@ resource "aws_launch_template" "mp1-lt" {
 
   network_interfaces {
     subnet_id      = data.aws_subnets.subneta.ids[0]
-    security_groups = [var.vpc_security_group_ids]
+    security_groups = ["sg-0edbc53f44a40636f,"sg-00c288502d8c0a4f0"]
   }
 
   tag_specifications {
