@@ -11,20 +11,70 @@
 
 # Default types are stings, lists, and maps
 
-variable "imageid" { default = "ami-0e86e20dae9224db8"}
-variable "instance_type" { default = "t2.micro"}
-variable "key_name" { default = "coursera-key"}
-variable "vpc_security_group_ids" { default = "sg-0edbc53f44a40636f"}
-variable "cnt" { default = "3"}
-variable "install_env_file" { default = "install-env.sh"}
-variable "az" { default = ["us-east-1a", "us-east1b", "us-east-1c"] }
-variable "elb_name" { default = "mm-elb"}
-variable "tg_name" { default = "mm-tg"}
-variable "asg_name" { default = "mm-asg"}
-variable "lt_name" { default = "mm-lt"}
-variable "min" { default = 2 }
-variable "max" { default = 5 }
-variable "desired" { default = 3 }
-variable "module_tag" { default = "module7-tag"}
-variable "raw_s3_bucket" { default = "mm-raw-bucket"}
-variable "finished_s3_bucket" { default = "mm-finished-bucket"}
+variable "imageid" { 
+  default = "ami-0e86e20dae9224db8" 
+}
+
+variable "instance_type" { 
+  default = "t2.micro" 
+}
+
+variable "key_name" { 
+  default = "coursera-key" 
+}
+
+variable "vpc_security_group_ids" { 
+  default = ["sg-0edbc53f44a40636f"]  # This should be a list
+}
+
+variable "cnt" { 
+  default = 3  # This should be a number 
+}
+
+variable "install_env_file" { 
+  default = "install-env.sh" 
+}
+
+variable "az" { 
+  default = ["us-east-1a", "us-east-1b", "us-east-1c"] 
+}
+
+variable "elb_name" { 
+  default = "mm-elb" 
+}
+
+variable "tg_name" { 
+  default = "mm-tg" 
+}
+
+variable "asg_name" { 
+  default = "mm-asg"
+}
+
+variable "lt_name" { 
+  default = "mm-lt" 
+}
+
+variable "min" { 
+  default = 2 
+}
+
+variable "max" { 
+  default = 5 
+}
+
+variable "desired" { 
+  default = 3 
+}
+
+variable "module_tag" { 
+  default = "module7-tag" 
+}
+
+variable "raw_s3_bucket" { 
+  default = "mm-raw-bucket"
+}
+
+variable "finished_s3_bucket" { 
+  default = "mm-finished-bucket" 
+}
