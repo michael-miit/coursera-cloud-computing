@@ -11,18 +11,20 @@
 
 # Default types are stings, lists, and maps
 
-variable "imageid" {}
-variable "instance-type" {}
-variable "key-name" {}
-variable "vpc_security_group_ids" {}
-variable "cnt" {}
-variable "install-env-file" {}
-variable "az" { default = ["us-east-2a", "us-east2b", "us-east-2c"] }
-variable "elb-name" {}
-variable "tg-name" {}
-variable "asg-name" {}
-variable "lt-name" {}
+variable "imageid" { default = "ami-0e86e20dae9224db8"}
+variable "instance-type" { default = "t2.micro"}
+variable "key-name" { default = "coursera-key"}
+variable "vpc_security_group_ids" { default = "sg-0edbc53f44a40636f"}
+variable "cnt" { default = "3"}
+variable "install-env-file" { default = "install-env.sh"}
+variable "az" { default = ["us-east-1a", "us-east1b", "us-east-1c"] }
+variable "elb-name" { default = "mm-elb"}
+variable "tg-name" { default = "mm-tg"}
+variable "asg-name" { default = "mm-asg"}
+variable "lt-name" { default = "mm-lt"}
 variable "min" { default = 2 }
 variable "max" { default = 5 }
 variable "desired" { default = 3 }
-variable "module-tag" {}
+variable "module-tag" { default = "module7-tag"}
+variable "raw-s3-bucket" { default = "mm-raw-bucket"}
+variable "finished-s3-bucket" { default = "mm-finished-bucket"}
