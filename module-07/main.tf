@@ -79,13 +79,13 @@ output "subnetid-1a" {
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb
 ##############################################################################
 resource "aws_lb" "lb" {
-  name               = 
-  internal           = false
+  name              = var.elb_name
+  internal          = false
   load_balancer_type = "application"
-  security_groups    = 
+  security_groups   = var.vpc_security_group_ids
 
   subnets = [data.aws_subnets.subneta.ids[0], data.aws_subnets.subnetb.ids[0]]
-  
+
   enable_deletion_protection = false
 
   tags = {
@@ -106,11 +106,11 @@ resource "aws_lb_target_group" "alb-lb-tg" {
   # depends_on is effectively a waiter -- it forces this resource to wait until the listed
   # resource is ready
   depends_on  = [aws_lb.lb]
-  name        = 
-  target_type = 
+  name        = var.tg_name
+  target_type = "instance"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = 
+  vpc_id      = data.aws_vpc.main.id
 }
 
 ##############################################################################
@@ -134,10 +134,10 @@ resource "aws_lb_listener" "front_end" {
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template
 ##############################################################################
 resource "aws_launch_template" "mp1-lt" {
-  image_id                             = 
+  image_id                              = var.imageid
   instance_initiated_shutdown_behavior = "terminate"
-  instance_type                        = 
-  key_name                             = 
+  instance_type                        = var.instance_type
+  key_name                              = var.key_name
 
   monitoring {
     enabled = false
@@ -145,32 +145,32 @@ resource "aws_launch_template" "mp1-lt" {
   placement {
     availability_zone = data.aws_availability_zones.primary.id
   }
-  
+
   block_device_mappings {
-    device_name = 
+    device_name = "/dev/xvdb"
 
     ebs {
-      volume_size = 
+      volume_size = 15
     }
   }
 
   block_device_mappings {
-    device_name = 
+    device_name = "/dev/xvdc"
 
     ebs {
-      volume_size = 
+      volume_size = 15
     }
   }
 
   network_interfaces {
-  subnet_id = data.aws_subnets.subneta.ids[0]
-  security_groups = [var.vpc_security_group_ids]
+    subnet_id      = data.aws_subnets.subneta.ids[0]
+    security_groups = [var.vpc_security_group_ids]
   }
-  
+
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name = 
+      Name = var.module_tag
     }
   }
   user_data = filebase64("./install-env.sh")
@@ -182,19 +182,19 @@ resource "aws_launch_template" "mp1-lt" {
 ##############################################################################
 
 resource "aws_autoscaling_group" "bar" {
-  name                      = 
+  name                      = var.asg_name
   depends_on                = [aws_launch_template.mp1-lt]
-  desired_capacity          = 
-  max_size                  = 
-  min_size                  = 
+  desired_capacity          = var.desired
+  max_size                  = var.max
+  min_size                  = var.min
   health_check_grace_period = 300
-  health_check_type         = 
+  health_check_type         = "ELB"
   target_group_arns         = [aws_lb_target_group.alb-lb-tg.arn]
   vpc_zone_identifier       = [data.aws_subnets.subneta.ids[0], data.aws_subnets.subnetb.ids[0]]
 
   tag {
     key                 = "assessment"
-    value               = 
+    value               = var.module_tag
     propagate_at_launch = true
   }
 
@@ -211,9 +211,9 @@ resource "aws_autoscaling_group" "bar" {
 
 resource "aws_autoscaling_attachment" "example" {
   # Wait for lb to be running before attaching to asg
-  depends_on  = [aws_lb.lb]
-  autoscaling_group_name = 
-  lb_target_group_arn    = 
+  depends_on             = [aws_lb.lb]
+  autoscaling_group_name = var.asg_name
+  lb_target_group_arn   = aws_lb_target_group.alb-lb-tg.arn
 }
 
 output "alb-lb-tg-arn" {
